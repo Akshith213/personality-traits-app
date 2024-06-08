@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: personality-traits-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: personality-traits
+  template:
+    metadata:
+      labels:
+        app: personality-traits
+    spec:
+      containers:
+      - name: personality-traits
+        image: akshith213/personality-traits-app:1.0
+        ports:
+        - containerPort: 8080
+

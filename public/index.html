@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personality Traits Radar Chart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Personality Traits Radar Chart</h1>
+        <p class="instructions">Drag the points along the spokes to adjust the trait values.</p>
+        <div class="selector-container">
+            <label for="traitSelector">Choose a trait set:</label>
+            <select id="traitSelector">
+                <option value="big5">Big 5</option>
+                <option value="mbti">MBTI</option>
+            </select>
+            <label for="kValue">Select K:</label>
+            <select id="kValue">
+                <!-- Options for selecting k -->
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <button id="applyKNN">Apply KNN</button>
+            <button id="togglePersonalityPanel">Show Personalities</button>
+        </div>
+        <div class="content">
+            <div id="radarChart"></div>
+            <div class="personality-list">
+                <ul id="personalityNames"></ul>
+            </div>
+        </div>
+        <button id="resetButton">Reset</button> 
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
