@@ -66,10 +66,11 @@ jobs:
         # Set output
         echo "::set-output name=version::$new_version"
 
-    - name: Build and push Docker image
+    - name: Build and push multi-architecture Docker image
       uses: docker/build-push-action@v4
       with:
         context: .
         push: true
         tags: akshith213/personality-traits-app:${{ steps.new_version.outputs.version }}
+        platforms: linux/amd64,linux/arm64
 
