@@ -1,5 +1,6 @@
 
 
+
 document.addEventListener("DOMContentLoaded", function() {
     const big5Traits = ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"];
     const mbtiTraits = ["Extraversion", "Sensing", "Thinking", "Judgment", "Introversion", "Intuition", "Feeling", "Perception"];
@@ -58,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
         {"name": "Reflective Dreamer", "values": [0.2, 0.5, 0.5, 0.8, 0.8]},
         {"name": "Empathetic Visionary", "values": [0.5, 0.8, 0.8, 0.5, 0.8]},
         {"name": "Dedicated Innovator", "values": [0.2, 0.8, 0.8, 0.5, 0.8]}
+        // Add more personalities as needed...
     ];
 
     let mbtiPersonalityData = [
@@ -78,13 +80,42 @@ document.addEventListener("DOMContentLoaded", function() {
         {"name": "The Nurturer (ISFJ)", "values": [0, 0, 0, 0, 1, 0, 1, 0]},
         {"name": "The Visionary (ENTP)", "values": [1, 0, 1, 0, 0, 1, 0, 1]},
         {"name": "The Composer (ISFP)", "values": [0, 0, 0, 0, 1, 0, 1, 1]}
+        // Add more personalities as needed...
     ];
 
-    let selectedSpoke = null; // Variable to keep track of the selected spoke
+    const words = {
+        "Openness": {
+            "Low": ["Conventional", "Down-to-earth", "Uncreative", "Narrow-minded", "Routine"],
+            "Average": ["Moderate", "Balanced", "Accepting", "Fair-minded", "Realistic"],
+            "High": ["Imaginative", "Creative", "Curious", "Inventive", "Open-minded"]
+        },
+        "Conscientiousness": {
+            "Low": ["Careless", "Impulsive", "Disorganized", "Negligent", "Irresponsible"],
+            "Average": ["Reliable", "Organized", "Dependable", "Practical", "Consistent"],
+            "High": ["Thorough", "Meticulous", "Diligent", "Disciplined", "Perfectionistic"]
+        },
+        "Extraversion": {
+            "Low": ["Reserved", "Quiet", "Introverted", "Withdrawn", "Shy"],
+            "Average": ["Sociable", "Approachable", "Friendly", "Interactive", "Talkative"],
+            "High": ["Outgoing", "Energetic", "Enthusiastic", "Assertive", "Gregarious"]
+        },
+        "Agreeableness": {
+            "Low": ["Critical", "Skeptical", "Aloof", "Self-interested", "Uncooperative"],
+            "Average": ["Considerate", "Pleasant", "Tolerant", "Reasonable", "Fair"],
+            "High": ["Compassionate", "Trusting", "Altruistic", "Empathetic", "Cooperative"]
+        },
+        "Neuroticism": {
+            "Low": ["Calm", "Stable", "Relaxed", "Unemotional", "Self-assured"],
+            "Average": ["Balanced", "Even-tempered", "Moderate", "Content", "Realistic"],
+            "High": ["Anxious", "Moody", "Sensitive", "Nervous", "Self-conscious"]
+        }
+    };
+
+    const selectedWords = {}; // Object to store selected words
 
     function loadPersonalities() {
         const personalityList = d3.select("#personalityNames");
-        personalityList.selectAll("*").remove();  // Clear existing list items if any
+        personalityList.selectAll("*").remove();
         const dataToUse = traitSelector.value === "big5" ? personalityData : mbtiPersonalityData;
         dataToUse.forEach(personality => {
             personalityList.append("li")
@@ -198,7 +229,75 @@ document.addEventListener("DOMContentLoaded", function() {
                 .attr("cy", d => rScale(d.value) * Math.sin(d.angle - Math.PI / 2))
                 .style("fill", d => d.trait === selectedSpoke ? "orange" : "navy")
                 .attr("r", d => d.trait === selectedSpoke ? 6 : 4); // Update radius for selected spoke
+
+            // Update word cloud
+            updateWordCloud(draggedPoint.trait, draggedPoint.value);
         }
+    }
+
+    function updateWordCloud(trait, value) {
+        const level = value === 0.2 ? "Low" : value === 0.5 ? "Average" : value === 0.8 ? "High" : null;
+        const wordsToShow = words[trait][level];
+        
+        const wordCloud = d3.select("#wordCloud");
+        wordCloud.selectAll("*").remove(); // Clear previous words
+
+        wordCloud.selectAll("div")
+            .data(wordsToShow)
+            .enter()
+            .append("div")
+            .attr("class", "word")
+            .style("padding", "5px")
+            .style("margin", "5px")
+            .style("background-color", "lightgrey")
+            .style("border-radius", "5px")
+            .style("cursor", "pointer")
+            .text(d => d)
+            .on("click", function(event, d) {
+                const isSelected = d3.select(this).classed("selected");
+                d3.select(this).classed("selected", !isSelected)
+                    .style("background-color", isSelected ? "lightgrey" : "orange");
+                if (isSelected) {
+                    removeSelectedWord(trait, level, d);
+                } else {
+                    retainSelectedWord(trait, level, d);
+                }
+            });
+    }
+
+    function retainSelectedWord(trait, level, word) {
+        if (!selectedWords[trait]) {
+            selectedWords[trait] = {};
+        }
+        if (!selectedWords[trait][level]) {
+            selectedWords[trait][level] = [];
+        }
+        selectedWords[trait][level].push(word); // Retain the selected word
+
+        updateSelectedWordsBox();
+    }
+
+    function removeSelectedWord(trait, level, word) {
+        const index = selectedWords[trait][level].indexOf(word);
+        if (index > -1) {
+            selectedWords[trait][level].splice(index, 1); // Remove the selected word
+        }
+
+        updateSelectedWordsBox();
+    }
+
+    function updateSelectedWordsBox() {
+        const selectedWordsList = d3.select("#selectedWordsList");
+        selectedWordsList.selectAll("*").remove(); // Clear previous list
+
+        Object.keys(selectedWords).forEach(trait => {
+            Object.keys(selectedWords[trait]).forEach(level => {
+                selectedWords[trait][level].forEach(word => {
+                    selectedWordsList.append("li")
+                        .text(`${trait} (${level}): ${word}`);
+                });
+            });
+        });
     }
 
     function calculateDistance(values1, values2) {
@@ -240,6 +339,15 @@ document.addEventListener("DOMContentLoaded", function() {
         d3.selectAll("#personalityNames li")
             .style("font-weight", "normal")
             .style("background-color", "transparent");
+
+        // Clear selected words
+        for (let trait in selectedWords) {
+            delete selectedWords[trait];
+        }
+        updateSelectedWordsBox();
+
+        // Clear word cloud
+        d3.select("#wordCloud").selectAll("*").remove();
     });
 
     toggleButton.addEventListener('click', function() {

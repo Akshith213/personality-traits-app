@@ -12,8 +12,9 @@
 }
 
 #radarChart {
-    width: 1400px;
+    width: 600px;
     height: 600px;
+    overflow: visible; /* Ensure that text overflowing the SVG boundary is visible */
 }
 
 .personality-list {
@@ -90,7 +91,6 @@
     border-radius: 5px;
     font-size: 16px;
     outline: none;
-
 }
 
 #applyKNN {
@@ -102,5 +102,40 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
 
+.axis text {
+    font-size: 14px; /* Adjust font size if necessary */
+}
+
+#radarChart .axis text {
+    transform: translateY(-10px); /* Adjust positioning to ensure text is fully visible */
+}
+
+/* Add styles for the word cloud */
+#wordCloud {
+    width: 300px;
+    height: 600px;
+    margin-left: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+}
+
+#selectedWordsBox {
+    width: 300px;
+    height: 581px;
+    margin-left: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    padding: 10px;
+}
+
+#selectedWordsBox h3 {
+    margin-top: 0;
+}
+
+#selectedWordsList {
+    list-style: none;
+    padding: 0;
 }

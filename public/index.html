@@ -17,7 +17,6 @@
             </select>
             <label for="kValue">Select K:</label>
             <select id="kValue">
-                <!-- Options for selecting k -->
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -32,8 +31,13 @@
             <div class="personality-list">
                 <ul id="personalityNames"></ul>
             </div>
+            <div id="wordCloud"></div>
+            <div id="selectedWordsBox">
+                <h3>Selected Words</h3>
+                <ul id="selectedWordsList"></ul>
+            </div>
         </div>
-        <button id="resetButton">Reset</button> 
+        <button id="resetButton">Reset</button>
     </div>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
